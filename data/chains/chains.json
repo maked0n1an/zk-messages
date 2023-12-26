@@ -1,0 +1,209 @@
+{
+    "arbitrum": {
+        "rpc": [
+            "https://rpc.ankr.com/arbitrum"
+        ],
+        "explorer": "https://arbiscan.io/tx/",
+        "token": "ETH",
+        "chain_id": 42161
+    },
+    "arbitrum_nova": {
+        "rpc": [
+            "https://nova.arbitrum.io/rpc"
+        ],
+        "explorer": "https://nova.arbiscan.io/tx/",
+        "token": "ETH",
+        "chain_id": 42170
+    },
+    "avalanche": {
+        "rpc": [
+            "https://rpc.ankr.com/avalanche"
+        ],
+        "explorer": "https://snowtrace.io/tx/",
+        "token": "AVAX",
+        "chain_id": 43114
+    },
+    "base": {
+        "rpc": [
+            "https://rpc.ankr.com/base"
+        ],
+        "explorer": "https://basescan.org/tx/",
+        "token": "ETH",
+        "chain_id": 8453
+    },
+    "bsc": {
+        "rpc": [
+            "https://rpc.ankr.com/bsc"
+        ],
+        "explorer": "https://bscscan.com/tx/",
+        "token": "BNB",
+        "chain_id": 56
+    },
+    "bsc testnet": {
+        "rpc": [
+            "https://data-seed-prebsc-1-s1.binance.org:8545"
+        ],
+        "explorer": "https://testnet.bscscan.com/tx/",
+        "token": "tBNB",
+        "chain_id": 97
+    },
+    "celo": {
+        "rpc": [
+            "https://rpc.ankr.com/celo"
+        ],
+        "explorer": "https://celoscan.io/tx/",
+        "token": "CELO",
+        "chain_id": 42220
+    },
+    "combo testnet": {
+        "rpc": [
+            "https://test-rpc.combonetwork.io"
+        ],
+        "explorer": "https://combotrace-testnet.nodereal.io/tx/",
+        "token": "tcBNB",
+        "chain_id": 91715
+    },
+    "core": {
+        "rpc": [
+            "https://rpc.coredao.org"
+        ],
+        "explorer": "https://scan.coredao.org/tx/",
+        "token": "CORE",
+        "chain_id": 1116
+    },
+    "dfk": {
+        "rpc": [
+            "https://subnets.avax.network/defi-kingdoms/dfk-chain/rpc\t"
+        ],
+        "explorer": "https://explorer.dfkchain.com/tx/",
+        "token": "JEWEL",
+        "chain_id": 53935
+    },
+    "ethereum": {
+        "rpc": [
+            "https://rpc.ankr.com/eth"
+        ],
+        "explorer": "https://etherscan.io/tx/",
+        "token": "ETH",
+        "chain_id": 1
+    },
+    "ftm": {
+        "rpc": [
+            "https://rpc.ankr.com/fantom"
+        ],
+        "explorer": "https://ftmscan.com/tx/",
+        "token": "FTM",
+        "chain_id": 250
+    },
+    "gnosis": {
+        "rpc": [
+            "https://rpc.ankr.com/gnosis"
+        ],
+        "explorer": "https://gnosisscan.io/tx/",
+        "token": "xDAI",
+        "chain_id": 100
+    },
+    "harmony": {
+        "rpc": [
+            "https://api.harmony.one"
+        ],
+        "explorer": "https://explorer.harmony.one/tx/",
+        "token": "ONE",
+        "chain_id": 1666600000
+    },
+    "klaytn": {
+        "rpc": [
+            "https://1rpc.io/klay"
+        ],
+        "explorer": "https://scope.klaytn.com/tx/",
+        "token": "KLAY",
+        "chain_id": 8217
+    },
+    "mantle": {
+        "rpc": [
+            "https://mantle.publicnode.com"
+        ],
+        "explorer": "https://explorer.mantle.xyz/tx",
+        "token": "MNT",
+        "chain_id": "5000"
+    },
+    "metis": {
+        "rpc": [
+            "https://andromeda.metis.io/?owner=1088"
+        ],
+        "explorer": "https://andromeda-explorer.metis.io",
+        "token": "METIS",
+        "chain_id": 1088
+    },
+    "mbeam": {
+        "rpc": [
+            "https://rpc.ankr.com/moonbeam"
+        ],
+        "explorer": "https://moonscan.io/tx/",
+        "token": "GLMR",
+        "chain_id": 1284
+    },
+    "moonriver": {
+        "rpc": [
+            "https://moonriver.public.blastapi.io"
+        ],
+        "explorer": "https://moonriver.moonscan.io/tx/",
+        "token": "MOVR",
+        "chain_id": 1285
+    },
+    "op_bnb testnet": {
+        "rpc": [
+            "https://opbnb-testnet-rpc.bnbchain.org"
+        ],
+        "explorer": "https://opbnbscan.com/tx/",
+        "token": "tBNB",
+        "chain_id": 5611
+    },
+    "optimism": {
+        "rpc": [
+            "https://rpc.ankr.com/optimism"
+        ],
+        "explorer": "https://optimistic.etherscan.io/tx/",
+        "token": "ETH",
+        "chain_id": 10
+    },
+    "polygon": {
+        "rpc": [
+            "https://rpc.ankr.com/polygon"
+        ],
+        "explorer": "https://polygonscan.com/tx/",
+        "token": "MATIC",
+        "chain_id": 137
+    },
+    "polygon_zkevm": {
+        "rpc": [
+            "https://zkevm-rpc.com"
+        ],
+        "explorer": "https://zkevm.polygonscan.com/tx/",
+        "token": "ETH",
+        "chain_id": 1101
+    },
+    "starknet": {
+        "rpc": [
+            "https://starknet-mainnet.public.blastapi.io"
+        ],
+        "explorer": "https://starkscan.co/tx/",
+        "token": "ETH"
+    },
+    "zk_sync": {
+        "rpc": [
+            "https://mainnet.era.zksync.io"
+        ],
+        "explorer": "https://explorer.zksync.io/tx/",
+        "token": "ETH",
+        "chain_id": 324
+    },
+    "zora": {
+        "rpc": [
+            "https://rpc.zora.energy"
+        ],
+        "explorer": "https://explorer.zora.energy/tx/",
+        "token": "ETH",
+        "chain_id": 7777777
+    }
+}
