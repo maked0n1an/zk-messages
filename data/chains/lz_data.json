@@ -1,0 +1,29 @@
+{
+    "zkMessengerContracts": {
+        "polygon": "0xD49B3a935621211135bE86934A3bB64D7A999152"
+    },
+    "stargateChainIds": {
+        "bsc": 102,
+        "celo": 125,
+        "gnosis": 145,
+        "mantle": 181,
+        "metis": 151,
+        "polygon": 109,
+        "fantom": 112,
+        "arbitrum_nova": 175,
+        "moonbeam": 126,
+        "core": 153
+    },
+    "lzChainIds": {
+        "bsc": 3,
+        "bsc_testnet": 103,
+        "polygon": 4,
+        "fantom": 6,
+        "core": 17,
+        "moonbeam": 9,
+        "arbitrum_nova": 14,
+        "op_bnb": 116,
+        "combo_testnet": 114,
+        "celo": 18    
+    }
+}
