@@ -1,5 +1,10 @@
-from utils.helpers import read_json
+from utils.helpers import read_json, read_txt
 
+PRIVATE_KEYS = read_txt("input_data/private_keys.txt")
+
+PROXIES = read_txt("input_data/proxies.txt")
+
+WALLET_NAMES = read_txt("input_data/wallet_names.txt")
 
 CHAINS_DATA = read_json("data/chains/chains.json")
 

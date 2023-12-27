@@ -2,11 +2,10 @@ import asyncio
 import random
 import time
 import aiohttp
-from eth_typing import HexStr
 
 from fake_useragent import UserAgent
 from hexbytes import HexBytes
-from utils.config import CHAINS_DATA, LZ_DATA, MESSENGER_ABI
+from utils.config import LZ_DATA, MESSENGER_ABI
 from utils.constansts import Status
 from utils.logger import setup_logger_for_wallet
 
@@ -15,11 +14,10 @@ from . import Account
 
 class ZkMessenger(Account):
     def __init__(self, wallet_name: str, private_key: str, chain: str, to_chain: str, proxy=None):
-        super().__init__(private_key, chain)
+        super().__init__(wallet_name, private_key, chain)
         self.wallet_name = wallet_name
         self.to_chain = random.choice(to_chain) if type(to_chain) == list else to_chain
         self.proxy = proxy or None
-        self.scan = CHAINS_DATA[self.chain]['scan']
         self.logger = setup_logger_for_wallet(self.wallet_name)
         
     async def validate(self):

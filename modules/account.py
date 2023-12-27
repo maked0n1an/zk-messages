@@ -16,7 +16,8 @@ from utils.constansts import Status
 
 
 class Account:
-    def __init__(self, private_key: str, chain: str) -> None:
+    def __init__(self, wallet_name: str, private_key: str, chain: str) -> None:
+        self.wallet_name = wallet_name
         self.private_key = private_key  
         self.chain = chain
         self.explorer = CHAINS_DATA[chain]["explorer"]
@@ -36,7 +37,7 @@ class Account:
         time.sleep(delay)
     
     def log_message(self, status: str, message):
-        self.logger.log(status, f"| {self.address} | {message}")
+        self.logger.log(status, f"{self.wallet_name:4}| {self.address} | {message}")
     
     def get_contract(self, contract_address: str, abi=None):
         contract_address = Web3.to_checksum_address(contract_address)
