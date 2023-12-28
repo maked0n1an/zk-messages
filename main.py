@@ -66,7 +66,7 @@ def get_wallets():
     return wallets
 
 async def run_module(module, wallet):
-    await module(wallet["key"], wallet["proxy"])
+    return await module(wallet["key"], wallet["proxy"])
 
 async def main(module):  
     wallets = get_wallets()
@@ -75,9 +75,9 @@ async def main(module):
         random.shuffle(wallets)
     
     for wallet in wallets:
-        await run_module(module, wallet)
+        is_result = await run_module(module, wallet)
         
-        if wallet != wallets[-1] and IS_SLEEP:
+        if IS_SLEEP and wallet != wallets[-1] and is_result:
             await initial_delay(SLEEP_FROM, SLEEP_TO)          
     
 if __name__ == "__main__":

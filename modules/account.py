@@ -28,11 +28,6 @@ class Account:
         
         self.logger = logger  
         
-    def wait_for_delay(self, from_secs=SLEEP_FROM, to_secs=SLEEP_TO):
-        delay = random.randint(from_secs, to_secs)
-        self.log_message(Status.DELAY, f"Waiting {delay} seconds to continue")
-        time.sleep(delay)
-        
     def log_message(self, status: str, message: str):
         #{self.wallet_name:4}| 
         self.logger.log(status, f"{self.address} | {message}")

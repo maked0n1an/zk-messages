@@ -110,7 +110,7 @@ class ZkMessenger(Account):
             self.log_message(Status.ERROR, f"Error during HTTP request to authorize: {e}")
             await asyncio.sleep(5)
     
-    async def _msg(self, 
+    async def _confirm_message(self, 
         headers,
         messenger_contract, 
         msg, 
@@ -226,19 +226,17 @@ class ZkMessenger(Account):
                 tx_hash = await self.web3.eth.send_raw_transaction(signed_txn.rawTransaction)
                 bool_action = await self.wait_until_tx_finished(f"{self.chain} | {self.chain} -> {to_chain}", tx_hash)
                 
-                if bool_action:
-                    msg = await self._msg(
+                if bool_action and await self._confirm_message(                    
                         headers, 
                         messenger_contract, 
                         message, 
                         sender_chain_id, 
                         receiver_chain_id,
                         signed_txn
-                    )
-                    if msg:
-                        await self.wait_for_delay()
-                        
+                    ):                        
                         return True
+                    
+                return bool_action
             except Exception as e:
                 self.log_message(Status.ERROR, f"{self.chain} | Error while message sending: {e}")
                 

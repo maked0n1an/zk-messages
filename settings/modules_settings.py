@@ -1,8 +1,7 @@
-from modules import *
+from modules import ZkMessenger
 
 
-
-async def send_message(private_key, proxy):
+async def send_message(private_key, proxy) -> bool:
     '''
     Send message
     ___________________________________________
@@ -14,10 +13,10 @@ async def send_message(private_key, proxy):
     to_chain            = 'arbitrum_nova'        
     
     zkMessenger = ZkMessenger(private_key, chain, proxy)
-    await zkMessenger.send_message(to_chain)
+    return await zkMessenger.send_message(to_chain)
     
     
-async def send_message_to_random_chain(private_key, proxy):
+async def send_message_to_random_chain(private_key, proxy) -> bool:
     '''
     Send message using random chain
     ___________________________________________
@@ -29,5 +28,4 @@ async def send_message_to_random_chain(private_key, proxy):
     random_chains       = ['arbitrum_nova', 'core', 'celo']
     
     zkMessenger = ZkMessenger(private_key,chain, proxy)
-    await zkMessenger.send_message(random_chains) 
-    
+    return await zkMessenger.send_message(random_chains) 

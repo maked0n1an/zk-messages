@@ -1,5 +1,5 @@
+import asyncio
 import json
-import time
 import random
 
 from pathlib import Path
@@ -20,11 +20,6 @@ def read_json(filepath: Path | str):
 def format_output(message: str):
     print(f"{message:^80}")    
     
-def initial_delay(sleep_from: int, sleep_to: int):
-    delay_secs = random.randint(sleep_from, sleep_to)
-    logger.log(Status.DELAY, f"- waiting for {delay_secs} to start wallet activities")
-    time.sleep(delay_secs)
-    
 def retry(func):
     async def _wrapper(*args, **kwargs):
         retries = 0
@@ -40,3 +35,7 @@ def retry(func):
         
     return _wrapper
     
+async def initial_delay(sleep_from=SLEEP_FROM, sleep_to=SLEEP_TO):
+    delay_secs = random.randint(sleep_from, sleep_to)
+    logger.log(Status.DELAY, f"- waiting for {delay_secs} to start wallet activities")
+    await asyncio.sleep(delay_secs)
