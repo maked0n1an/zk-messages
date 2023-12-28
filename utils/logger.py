@@ -18,11 +18,7 @@ def setup_logger_for_output():
         "</cyan> <white>{message}</white>",
     )
     
-    logger.level(Status.INFO, no=251, color="<white>")
-    logger.level(Status.SUCCESS, no=252, color="<green>")
-    logger.level(Status.FAILED, no=253, color="<red>")
-    logger.level(Status.ERROR, no=253, color="<red>")
-    
+    logger.level(Status.FAILED, no=253, color="<red>")    
     logger.level(Status.RETRY, no=261, color="<yellow>")
     logger.level(Status.DELAY, no=262, color="<yellow>")
 
