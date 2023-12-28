@@ -1,4 +1,7 @@
 {
+    "layerzero": {
+        "explorer": "https://layerzeroscan.com/tx/"
+    },
     "arbitrum": {
         "rpc": [
             "https://rpc.ankr.com/arbitrum"
