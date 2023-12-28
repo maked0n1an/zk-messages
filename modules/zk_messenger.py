@@ -1,32 +1,30 @@
 import asyncio
 import random
 import time
+from typing import List
 import aiohttp
 
 from fake_useragent import UserAgent
-from hexbytes import HexBytes
-from utils.config import LZ_DATA, MESSENGER_ABI
+from eth_account.messages import encode_defunct
+from utils.config import LZ_DATA, MESSAGES, MESSENGER_ABI
 from utils.constansts import Status
-from utils.logger import setup_logger_for_wallet
+from utils.helpers import retry
 
 from . import Account
 
 
 class ZkMessenger(Account):
-    def __init__(self, wallet_name: str, private_key: str, chain: str, to_chain: str, proxy=None):
-        super().__init__(wallet_name, private_key, chain)
-        self.wallet_name = wallet_name
-        self.to_chain = random.choice(to_chain) if type(to_chain) == list else to_chain
+    def __init__(self, private_key: str, chain: str, proxy=None):
+        super().__init__(private_key, chain)
         self.proxy = proxy or None
-        self.logger = setup_logger_for_wallet(self.wallet_name)
         
-    async def validate(self):
+    async def _validate(self):
         ua = UserAgent()
         ua = ua.random
         headers = {
             'authority': 'api.zkbridge.com',
             'accept': 'application/json, text/plain, */*',
-            'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+            'accept-language': 'hu-HU,hu;q=0.9,en-US;q=0.8,en;q=0.7',
             'content-type': 'application/json',
             'origin': 'https://zkbridge.com',
             'referer': 'https://zkbridge.com/',
@@ -40,7 +38,7 @@ class ZkMessenger(Account):
         }
         
         json_data = {
-            'public_key': self.address.lower(),
+            'publicKey': self.address.lower(),
         }
         
         while True:
@@ -53,9 +51,10 @@ class ZkMessenger(Account):
                         headers=headers, proxy=self.proxy) as response:
                         
                         if response.status == 200:
-                            message_header = await self._get_json(header='message', response=response)
-                            signature = self.sign_message(message_header)
-                            hex_signature = self.web3.to_hex(signature.signature)
+                            message_header = await self._get_header(header='message', response=response)
+                            msg = encode_defunct(text=message_header)
+                            sign = await self.sign_message(msg)
+                            hex_signature = self.web3.to_hex(sign.signature)
                             
                             return headers, hex_signature
                         else:
@@ -64,8 +63,8 @@ class ZkMessenger(Account):
                 self.log_message(Status.ERROR, f"Error during HTTP request to identificate: {e}")
                 await asyncio.sleep(5)
                             
-    async def sign_in(self):
-        headers, hex_signature = await self.validate()
+    async def _sign_in(self):
+        headers, hex_signature = await self._validate()
 
         json_data = {
             'publicKey': self.address.lower(),
@@ -81,7 +80,7 @@ class ZkMessenger(Account):
                         headers=headers, proxy=self.proxy) as response:
                         
                         if response.status == 200:
-                            token_header = await self._get_json(header='token', response=response)
+                            token_header = await self._get_header(header='token', response=response)
                             headers['authorization'] = f"Bearer {token_header}"
                             
                             return headers
@@ -91,17 +90,18 @@ class ZkMessenger(Account):
                 self.log_message(Status.ERROR, f"Error during HTTP request to sign: {e}")
                 await asyncio.sleep(5)
                             
-    async def profile(self):
-        headers = await self.sign_in()
+    async def _profile(self):
+        headers = await self._sign_in()
+        params = ""
         
-        url = 'https://api.zkbridge.com/api/user/profile'
+        url = 'https://api.zkbridge.com/api/user/profile?'
         
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.post(url=url, headers=headers, 
-                        proxy=self.proxy) as response:
+                async with session.get(url=url, params=params,
+                    headers=headers, proxy=self.proxy) as response:
                     if response.status == 200:
-                        self.log_message(Status.SUCCESS, f"{self.chain} | Successfully authorized")
+                        self.log_message(Status.INFO, f"{self.chain} | ✅ Successfully authorized")
                         
                         return headers
                     else:
@@ -111,25 +111,25 @@ class ZkMessenger(Account):
             await asyncio.sleep(5)
     
     async def _msg(self, 
-        headers: dict[str],
-        messenger_contract: str, 
-        msg: str, 
-        from_chain_id: int, 
-        to_chain_id: int, 
-        tx_hash: HexBytes
+        headers,
+        messenger_contract, 
+        msg, 
+        from_chain_id, 
+        to_chain_id, 
+        tx_hash
     ):
         timestamp = time.time()
         
         json_data = {
             "message": msg,
-            "mailSenderAddress": messenger_contract,
+            "mailSenderAddress": str(messenger_contract),
             "receiverAddress": self.address,
             "receiverChainId": to_chain_id,
             "receiverDomainName": "",
             "sendTimestamp": timestamp,
             "senderAddress": self.address,
             "senderChainId": from_chain_id,
-            "senderTxHash": tx_hash,
+            "senderTxHash": str(tx_hash),
             "sequence": 0,
             "receiverDomainName": "",
             "isL0": True
@@ -153,28 +153,47 @@ class ZkMessenger(Account):
             return False
         
     async def _create_msg(self):
-        n = random.randint(1, 20)
-        string = []
-        resource = "https://www.mit.edu/~ecprice/wordlist.10000"
+        return random.choice(MESSAGES)
         
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(resource) as response:
-                    if response.status == 200:
-                        for i in range(n):
-                            response = (await response.text()).split()
-                            words = [g for g in response]
-                            
-                            string.append(random.choice(words))
-                        message = ' '.join(string)
-                        
-                        return message
-        except Exception as e:
-            await asyncio.sleep(1)
-            return await self._create_msg()
+    async def _get_tx_data(self, contract: any, to_chain_id: int, message: str, _adapterParams: str):
+        nonce = await self.web3.eth.get_transaction_count(self.address)        
+        maxFeePerGas = int(await self.web3.eth.gas_price)
+        maxPriority = int(await self.web3.eth.max_priority_fee)  
         
-    async def send_message(self):
-        data = await self.profile()
+        fee = await contract.functions.fees(to_chain_id).call()
+        zkFee = await contract.functions.estimateFee(to_chain_id, self.address, message, _adapterParams).call()
+        value = zkFee + fee
+        
+        gas_data = {
+            "nonce": nonce,
+            "from": self.address,
+            "value": value
+        }
+
+        gas = await contract.functions.sendMessage(
+            to_chain_id, 
+            self.address, 
+            message, 
+            _adapterParams
+        ).estimate_gas(gas_data)      
+        
+        tx_data = {
+            "nonce": nonce,
+            "from": self.address,
+            "value": value,
+            "gas": gas,
+            "maxFeePerGas": maxFeePerGas,
+            "maxPriorityFeePerGas": maxPriority
+        }
+
+        return tx_data
+    
+    @retry
+    async def send_message(self, to_chain):
+        data = await self._profile()
+        
+        if type(to_chain) == list:
+            to_chain = random.choice(to_chain)
         
         if data:
             headers = data
@@ -183,8 +202,7 @@ class ZkMessenger(Account):
         
         contract = LZ_DATA["zkMessengerContracts"][self.chain]
         messenger_contract = self.get_contract(contract_address=contract, abi=MESSENGER_ABI)
-        # lz_receiver_id = LZ_DATA['stargateChainIds'][self.to_chain] 
-        receiver_chain_id = LZ_DATA['lzChainIds'][self.to_chain]
+        receiver_chain_id = LZ_DATA['lzChainIds'][to_chain]
         sender_chain_id = LZ_DATA['lzChainIds'][self.chain]
         
         message = await self._create_msg()        
@@ -193,9 +211,9 @@ class ZkMessenger(Account):
             
         while True:
             try: 
-                self.log_message(Status.INFO, f"{self.chain} - is beginning to send to {self.to_chain} via L0...")
-               
-                tx_data = self.get_tx_data()
+                self.log_message(Status.INFO, f"{self.chain} | start sending to <{to_chain}> via L0...")
+                
+                tx_data = await self._get_tx_data(messenger_contract, receiver_chain_id, message, _adapterParams)
                 
                 tx = await messenger_contract.functions.sendMessage(
                     receiver_chain_id,
@@ -204,9 +222,9 @@ class ZkMessenger(Account):
                     _adapterParams
                 ).build_transaction(tx_data)
                 
-                signed_txn = self.sign_tx(tx)
-                
-                bool_action = await self.wait_until_tx_finished("Successfully sent!", signed_txn)
+                signed_txn = await self.sign_tx(tx)
+                tx_hash = await self.web3.eth.send_raw_transaction(signed_txn.rawTransaction)
+                bool_action = await self.wait_until_tx_finished(f"{self.chain} | {self.chain} -> {to_chain}", tx_hash)
                 
                 if bool_action:
                     msg = await self._msg(
@@ -221,18 +239,17 @@ class ZkMessenger(Account):
                         await self.wait_for_delay()
                         
                         return True
-                else:
-                    self.log_message(Status.RETRY, f'| {self.chain} - trying one more to send message...')
-                    await self.send_message()
             except Exception as e:
                 self.log_message(Status.ERROR, f"{self.chain} | Error while message sending: {e}")
                 
-    async def _get_json(self, header: str, response: aiohttp.ClientSession) -> str:
+                return False
+                
+    async def _get_header(self, header: str, response: aiohttp.ClientSession):
         try:
-            message = await response.json()
-            message = message[header]
+            json_response = await response.json()
+            header = json_response[header]
             
-            return message
+            return header
         except Exception as e:
             self.log_message(Status.ERROR, f"Error while processing JSON response: {e}")
             

@@ -4,7 +4,9 @@ PRIVATE_KEYS = read_txt("input_data/private_keys.txt")
 
 PROXIES = read_txt("input_data/proxies.txt")
 
-WALLET_NAMES = read_txt("input_data/wallet_names.txt")
+# WALLET_NAMES = read_txt("input_data/wallet_names.txt")
+
+MESSAGES = read_txt("data/messages/messages.txt")
 
 CHAINS_DATA = read_json("data/chains/chains.json")
 

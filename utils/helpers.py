@@ -1,6 +1,12 @@
 import json
+import time
+import random
 
 from pathlib import Path
+from .logger import logger
+
+from settings.settings import RETRY_COUNT, SLEEP_FROM, SLEEP_TO
+from utils.constansts import Status
 
 
 def read_txt(filepath: Path | str):
@@ -13,3 +19,24 @@ def read_json(filepath: Path | str):
     
 def format_output(message: str):
     print(f"{message:^80}")    
+    
+def initial_delay(sleep_from: int, sleep_to: int):
+    delay_secs = random.randint(sleep_from, sleep_to)
+    logger.log(Status.DELAY, f"- waiting for {delay_secs} to start wallet activities")
+    time.sleep(delay_secs)
+    
+def retry(func):
+    async def _wrapper(*args, **kwargs):
+        retries = 0
+        while retries < RETRY_COUNT:
+            try:
+                result = await func(*args, **kwargs)
+                
+                return result
+            except Exception as e:
+                logger.error(f"Error | {e}")
+                await initial_delay(10, 60)
+                retries += 1
+        
+    return _wrapper
+    

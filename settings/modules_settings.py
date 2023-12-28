@@ -1,17 +1,33 @@
 from modules import *
 
-async def send_message(wallet_name, private_key, proxy):
+
+
+async def send_message(private_key, proxy):
     '''
-    Send messege
+    Send message
     ___________________________________________
-    chain - from chain
-    to_chain - to chain
+    chain - from chain: polygon
+    to_chain - to chain: arbitrum_nova, core, celo
+    '''    
+    
+    chain               = 'polygon'
+    to_chain            = 'arbitrum_nova'        
+    
+    zkMessenger = ZkMessenger(private_key, chain, proxy)
+    await zkMessenger.send_message(to_chain)
+    
+    
+async def send_message_to_random_chain(private_key, proxy):
     '''
+    Send message using random chain
+    ___________________________________________
+    chain - from chain: polygon
+    to_chain - to chain: arbitrum_nova, core, celo
+    '''    
     
-    chain = 'polygon'
-    to_chain = 'core'    
+    chain               = 'polygon'
+    random_chains       = ['arbitrum_nova', 'core', 'celo']
     
-    
-    zkMessenger = ZkMessenger(wallet_name, private_key, chain, to_chain, proxy)
-    zkMessenger.send_message()
+    zkMessenger = ZkMessenger(private_key,chain, proxy)
+    await zkMessenger.send_message(random_chains) 
     
